@@ -2,74 +2,103 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"igbo-go/client"
 	api "igbo-go/grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const defaultURL = "localhost:8080"
 
 func main() {
-	add := flag.Bool("add", false, "Add activity")
-	get := flag.Bool("get", false, "Get activity")
+	create := flag.Bool("create", false, "Create object")
+	update := flag.Bool("update", false, "Update object")
+	delete := flag.Bool("delete", false, "Delete object")
+	retrieve := flag.Bool("retrieve", false, "Retrieve object")
 	list := flag.Bool("list", false, "List activities")
 
 	flag.Parse()
 
-	activitiesClient := client.NewActivities(defaultURL)
+	igboDBClient := client.NewIgboDbClient(defaultURL)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	switch {
-	case *get:
-		id, err := strconv.Atoi(os.Args[2])
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Invalid Offset: Not an integer")
-			os.Exit(1)
-		}
-		a, err := activitiesClient.Retrieve(ctx, id)
+	case *retrieve:
+		aIds := []string{"bfe056c8-41c9-11ed-b878-0242ac120003"}
+		ids := api.Ids{Values: aIds}
+		objects, err := igboDBClient.Retrieve(ctx, &ids)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err.Error())
 			os.Exit(1)
 		}
-		fmt.Println(asString(a))
-	case *add:
+		json, _ := json.Marshal(objects)
+		fmt.Println(string(json))
+	case *create:
 		if len(os.Args) != 3 {
-			fmt.Fprintln(os.Stderr, `Usage: --add "message"`)
+			fmt.Fprintln(os.Stderr, `Usage: --create "message"`)
 			os.Exit(1)
 		}
-		a := api.Activity{Time: timestamppb.New(time.Now()), Description: os.Args[2]}
-		id, err := activitiesClient.Insert(ctx, &a)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err.Error())
-			os.Exit(1)
-		}
-		fmt.Printf("Added: %s as %d\n", asString(&a), id)
-	case *list:
-		as, err := activitiesClient.List(ctx, 0)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err.Error())
-			os.Exit(1)
-		}
-		var output string
-		for _, a := range as {
-			output += asString(a) + "\n"
-		}
-		fmt.Println(output)
 
+		attribute := api.Attribute{
+			Name:  "Attribute1",
+			Type:  api.AttributeType_STRING,
+			Value: "Attr value 1",
+		}
+		object := api.Object{
+			Id:         "bfe056c8-41c9-11ed-b878-0242ac120003",
+			Type:       "MyObjectType",
+			Attributes: []*api.Attribute{&attribute},
+		}
+		aObjects := []*api.Object{&object}
+		objects := api.Objects{
+			Items: aObjects,
+		}
+
+		id, err := igboDBClient.Create(ctx, &objects)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err.Error())
+			os.Exit(1)
+		}
+		json, _ := json.Marshal(objects)
+		fmt.Printf("Added: %s as %d\n", string(json), id)
+	case *update:
+		aIds := []string{"bfe056c8-41c9-11ed-b878-0242ac120003"}
+		ids := api.Ids{Values: aIds}
+		objects, err := igboDBClient.Retrieve(ctx, &ids)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err.Error())
+			os.Exit(1)
+		}
+		objects.Items[0].Attributes[0].Value = "Attribute Updated"
+		json, _ := json.Marshal(objects)
+		fmt.Printf("Objects updated: %s \n", string(json))
+		results, err := igboDBClient.Update(ctx, objects)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err.Error())
+			os.Exit(1)
+		}
+		for _, result := range results.Results {
+			fmt.Printf("Update result: %v %v \n", result.Type, result.Message)
+		}
+	case *delete:
+		aIds := []string{"bfe056c8-41c9-11ed-b878-0242ac120003"}
+		ids := api.Ids{Values: aIds}
+		results, err := igboDBClient.Delete(ctx, &ids)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err.Error())
+			os.Exit(1)
+		}
+		for _, result := range results.Results {
+			fmt.Printf("Deleted result: %v %v \n", result.Type, result.Message)
+		}
+	case *list:
 	default:
 		flag.Usage()
 		os.Exit(1)
 	}
-}
-
-func asString(a *api.Activity) string {
-	return fmt.Sprintf("ID:%d\t\"%s\"\t%d-%d-%d",
-		a.Id, a.Description, a.Time.AsTime().Year(), a.Time.AsTime().Month(), a.Time.AsTime().Day())
 }

@@ -2,14 +2,20 @@
 set -e
 
 echo "=== Add Records ==="
-./igbo-go -add "overhead press: 70lbs"
-./igbo-go -add "20 minute walk"
+./igbo-go -create ""
 
 echo "=== Retrieve Records ==="
-./igbo-go -get 1 | grep "overhead press"
-./igbo-go -get 2 | grep "20 minute walk"
+./igbo-go -retrieve ""
 
-echo "=== List Records ==="
-./igbo-go -list
-./igbo-go -list  | grep "overhead press"
-./igbo-go -list  | grep "20 minute walk"
+echo "=== Update Record ==="
+./igbo-go -update ""
+
+echo "=== Retrieve Records ==="
+./igbo-go -retrieve ""
+
+echo "=== Delete Record ==="
+./igbo-go -delete ""
+
+echo "=== Retrieve Records ==="
+./igbo-go -retrieve ""
+
