@@ -42,8 +42,8 @@ func (c *IgboDbClient) Update(ctx context.Context, objects *api.Objects) (*api.O
 	return resp, nil
 }
 
-func (c *IgboDbClient) Delete(ctx context.Context, ids *api.Ids) (*api.OperationResults, error) {
-	resp, err := c.client.Delete(ctx, ids)
+func (c *IgboDbClient) Delete(ctx context.Context, keys *api.ObjectKeys) (*api.OperationResults, error) {
+	resp, err := c.client.Delete(ctx, keys)
 	if err != nil {
 		return nil, fmt.Errorf("Insert failure: %w", err)
 	}
@@ -52,8 +52,8 @@ func (c *IgboDbClient) Delete(ctx context.Context, ids *api.Ids) (*api.Operation
 
 var ErrIDNotFound = errors.New("Id not found")
 
-func (c *IgboDbClient) Retrieve(ctx context.Context, ids *api.Ids) (*api.Objects, error) {
-	resp, err := c.client.Retrieve(ctx, ids)
+func (c *IgboDbClient) Retrieve(ctx context.Context, keys *api.ObjectKeys) (*api.Objects, error) {
+	resp, err := c.client.Retrieve(ctx, keys)
 	if err != nil {
 		st, _ := status.FromError(err)
 		if st.Code() == codes.NotFound {

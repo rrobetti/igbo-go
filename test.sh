@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 set -e
 
+echo "=== Delete Record ==="
+./igbo-go -delete ""
+
 echo "=== Add Records ==="
 ./igbo-go -create ""
 

@@ -29,9 +29,14 @@ func main() {
 
 	switch {
 	case *retrieve:
-		aIds := []string{"bfe056c8-41c9-11ed-b878-0242ac120003"}
-		ids := api.Ids{Values: aIds}
-		objects, err := igboDBClient.Retrieve(ctx, &ids)
+		oKey := new(api.ObjectKey)
+		oKey.Type = "MyObjectType"
+		oKey.Id = "bfe056c8-41c9-11ed-b878-0242ac120003"
+		keys := []*api.ObjectKey{oKey}
+
+		objectKeys := new(api.ObjectKeys)
+		objectKeys.Keys = keys
+		objects, err := igboDBClient.Retrieve(ctx, objectKeys)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err.Error())
 			os.Exit(1)
@@ -49,9 +54,11 @@ func main() {
 			Type:  api.AttributeType_STRING,
 			Value: "Attr value 1",
 		}
+		oKey := new(api.ObjectKey)
+		oKey.Type = "MyObjectType"
+		oKey.Id = "bfe056c8-41c9-11ed-b878-0242ac120003"
 		object := api.Object{
-			Id:         "bfe056c8-41c9-11ed-b878-0242ac120003",
-			Type:       "MyObjectType",
+			Key:        oKey,
 			Attributes: []*api.Attribute{&attribute},
 		}
 		aObjects := []*api.Object{&object}
@@ -67,9 +74,14 @@ func main() {
 		json, _ := json.Marshal(objects)
 		fmt.Printf("Added: %s as %d\n", string(json), id)
 	case *update:
-		aIds := []string{"bfe056c8-41c9-11ed-b878-0242ac120003"}
-		ids := api.Ids{Values: aIds}
-		objects, err := igboDBClient.Retrieve(ctx, &ids)
+		oKey := new(api.ObjectKey)
+		oKey.Type = "MyObjectType"
+		oKey.Id = "bfe056c8-41c9-11ed-b878-0242ac120003"
+		keys := []*api.ObjectKey{oKey}
+
+		objectKeys := new(api.ObjectKeys)
+		objectKeys.Keys = keys
+		objects, err := igboDBClient.Retrieve(ctx, objectKeys)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err.Error())
 			os.Exit(1)
@@ -86,9 +98,14 @@ func main() {
 			fmt.Printf("Update result: %v %v \n", result.Type, result.Message)
 		}
 	case *delete:
-		aIds := []string{"bfe056c8-41c9-11ed-b878-0242ac120003"}
-		ids := api.Ids{Values: aIds}
-		results, err := igboDBClient.Delete(ctx, &ids)
+		oKey := new(api.ObjectKey)
+		oKey.Type = "MyObjectType"
+		oKey.Id = "bfe056c8-41c9-11ed-b878-0242ac120003"
+		keys := []*api.ObjectKey{oKey}
+
+		objectKeys := new(api.ObjectKeys)
+		objectKeys.Keys = keys
+		results, err := igboDBClient.Delete(ctx, objectKeys)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error:", err.Error())
 			os.Exit(1)

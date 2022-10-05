@@ -5,8 +5,8 @@ option go_package = "./proto";
 service IgboDB {
     rpc Create(Objects) returns (OperationResults) {}
     rpc Update(Objects) returns (OperationResults) {}
-    rpc Delete(Ids) returns (OperationResults) {}
-    rpc Retrieve(Ids) returns (Objects  ) {}
+    rpc Delete(ObjectKeys) returns (OperationResults) {}
+    rpc Retrieve(ObjectKeys) returns (Objects  ) {}
     rpc Query(QueryRequest) returns (Objects) {}
 }
 
@@ -37,8 +37,7 @@ message Attribute {
 }
 
 message Object {
-    string type = 1;
-    string id = 2;
+    ObjectKey key = 1;
     repeated Attribute attributes = 3;
 }
 
@@ -46,8 +45,13 @@ message Objects {
     repeated Object items = 1;
 }
 
-message Ids {
-    repeated string values = 1;
+message ObjectKey {
+    string type = 1;
+    string id = 2;
+}
+
+message ObjectKeys {
+    repeated ObjectKey keys = 2;
 }
 
 message QueryRequest {

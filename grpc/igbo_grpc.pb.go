@@ -24,8 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type IgboDBClient interface {
 	Create(ctx context.Context, in *Objects, opts ...grpc.CallOption) (*OperationResults, error)
 	Update(ctx context.Context, in *Objects, opts ...grpc.CallOption) (*OperationResults, error)
-	Delete(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*OperationResults, error)
-	Retrieve(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*Objects, error)
+	Delete(ctx context.Context, in *ObjectKeys, opts ...grpc.CallOption) (*OperationResults, error)
+	Retrieve(ctx context.Context, in *ObjectKeys, opts ...grpc.CallOption) (*Objects, error)
 	Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*Objects, error)
 }
 
@@ -55,7 +55,7 @@ func (c *igboDBClient) Update(ctx context.Context, in *Objects, opts ...grpc.Cal
 	return out, nil
 }
 
-func (c *igboDBClient) Delete(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*OperationResults, error) {
+func (c *igboDBClient) Delete(ctx context.Context, in *ObjectKeys, opts ...grpc.CallOption) (*OperationResults, error) {
 	out := new(OperationResults)
 	err := c.cc.Invoke(ctx, "/IgboDB/Delete", in, out, opts...)
 	if err != nil {
@@ -64,7 +64,7 @@ func (c *igboDBClient) Delete(ctx context.Context, in *Ids, opts ...grpc.CallOpt
 	return out, nil
 }
 
-func (c *igboDBClient) Retrieve(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*Objects, error) {
+func (c *igboDBClient) Retrieve(ctx context.Context, in *ObjectKeys, opts ...grpc.CallOption) (*Objects, error) {
 	out := new(Objects)
 	err := c.cc.Invoke(ctx, "/IgboDB/Retrieve", in, out, opts...)
 	if err != nil {
@@ -88,8 +88,8 @@ func (c *igboDBClient) Query(ctx context.Context, in *QueryRequest, opts ...grpc
 type IgboDBServer interface {
 	Create(context.Context, *Objects) (*OperationResults, error)
 	Update(context.Context, *Objects) (*OperationResults, error)
-	Delete(context.Context, *Ids) (*OperationResults, error)
-	Retrieve(context.Context, *Ids) (*Objects, error)
+	Delete(context.Context, *ObjectKeys) (*OperationResults, error)
+	Retrieve(context.Context, *ObjectKeys) (*Objects, error)
 	Query(context.Context, *QueryRequest) (*Objects, error)
 	mustEmbedUnimplementedIgboDBServer()
 }
@@ -104,10 +104,10 @@ func (UnimplementedIgboDBServer) Create(context.Context, *Objects) (*OperationRe
 func (UnimplementedIgboDBServer) Update(context.Context, *Objects) (*OperationResults, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedIgboDBServer) Delete(context.Context, *Ids) (*OperationResults, error) {
+func (UnimplementedIgboDBServer) Delete(context.Context, *ObjectKeys) (*OperationResults, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedIgboDBServer) Retrieve(context.Context, *Ids) (*Objects, error) {
+func (UnimplementedIgboDBServer) Retrieve(context.Context, *ObjectKeys) (*Objects, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Retrieve not implemented")
 }
 func (UnimplementedIgboDBServer) Query(context.Context, *QueryRequest) (*Objects, error) {
@@ -163,7 +163,7 @@ func _IgboDB_Update_Handler(srv interface{}, ctx context.Context, dec func(inter
 }
 
 func _IgboDB_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Ids)
+	in := new(ObjectKeys)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -175,13 +175,13 @@ func _IgboDB_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/IgboDB/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IgboDBServer).Delete(ctx, req.(*Ids))
+		return srv.(IgboDBServer).Delete(ctx, req.(*ObjectKeys))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IgboDB_Retrieve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Ids)
+	in := new(ObjectKeys)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func _IgboDB_Retrieve_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/IgboDB/Retrieve",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IgboDBServer).Retrieve(ctx, req.(*Ids))
+		return srv.(IgboDBServer).Retrieve(ctx, req.(*ObjectKeys))
 	}
 	return interceptor(ctx, in, info, handler)
 }
