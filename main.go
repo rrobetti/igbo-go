@@ -12,7 +12,7 @@ import (
 	api "igbo-go/grpc"
 )
 
-const defaultURL = "localhost:8080"
+const defaultURL = "localhost:1234"
 
 func main() {
 	create := flag.Bool("create", false, "Create object")
