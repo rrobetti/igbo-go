@@ -1,0 +1,94 @@
+syntax="proto3";
+
+option go_package = "./proto";
+
+service IgboDB {
+    rpc OperationsStream(stream OperationRequest) returns (stream OperationResponse) {}
+    rpc Create(Objects) returns (OperationResults) {}
+    rpc Update(Objects) returns (OperationResults) {}
+    rpc Delete(ObjectKeys) returns (OperationResults) {}
+    rpc Retrieve(ObjectKeys) returns (Objects  ) {}
+    rpc Query(QueryRequest) returns (Objects) {}
+}
+
+enum AttributeType {
+    OBJECT = 0;
+    STRING = 1;
+    CHARACTER = 2;
+    INTEGER = 3;
+    LONG = 4;
+    FLOAT = 5;
+    DOUBLE = 6;
+    BOOLEAN = 7;
+    ENUM=8;
+    DYNAMIC_ARRAY=9;
+    MAP=10;
+    LINKED_LIST=11;
+}
+
+enum ResultType {
+    SUCCESS = 0;
+    FAILURE = 1;
+}
+
+enum OperationType {
+    CREATE = 0;
+    READ = 1;
+    UPDATE = 2;
+    DELETE = 3;
+    QUERY = 4;
+}
+
+
+message RequestId {
+    string id = 1;
+    OperationType type = 2;
+}
+
+message OperationRequest {
+    RequestId requestId = 1;
+    oneof payload {Objects objects = 2; ObjectKeys objectKeys = 3;}
+}
+
+message OperationResponse {
+    RequestId requestId = 1;
+    oneof payload {Objects objects = 2; OperationResults results = 3;}
+}
+
+message Attribute {
+  string name = 1;
+  AttributeType type = 2;
+  string value = 3;
+}
+
+message Object {
+    ObjectKey key = 1;
+    repeated Attribute attributes = 3;
+}
+
+message Objects {
+    repeated Object items = 1;
+}
+
+message ObjectKey {
+    string type = 1;
+    string id = 2;
+}
+
+message ObjectKeys {
+    repeated ObjectKey keys = 2;
+}
+
+message QueryRequest {
+    string query = 1;
+    repeated Attribute parameters = 2;
+}
+
+message Result {
+  ResultType type = 1;
+  string message = 2;
+}
+
+message OperationResults {
+    repeated Result results = 1;
+}
